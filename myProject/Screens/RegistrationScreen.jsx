@@ -1,6 +1,7 @@
-import React, { useState } from "react";
+import React, { useState, useCallback } from "react";
 import {
   StyleSheet,
+  ImageBackground,
   Text,
   View,
   TextInput,
@@ -10,8 +11,11 @@ import {
   TouchableWithoutFeedback,
 } from "react-native";
 
-import * as Font from 'expo-font';
+import { useFonts } from "expo-font";
+import * as SplashScreen from "expo-splash-screen";
+import Icon from "../assets/images/add.svg";
 
+SplashScreen.preventAutoHideAsync();
 
 const initialState = {
   login: "",
@@ -22,74 +26,133 @@ const initialState = {
 export default function RegistrationScreen() {
   const [isShowKeyboard, setIsShowKeyboard] = useState(false);
   const [state, setState] = useState(initialState);
+  const [focused, setFocused] = useState("");
 
   const keyboardHide = () => {
     setIsShowKeyboard(false);
     Keyboard.dismiss();
-    setState(initialState);
   };
+  const [fontsLoaded] = useFonts({
+    "Roboto-Regular": require("../assets/fonts/Roboto-Regular.ttf"),
+  });
+  const onLayoutRootView = useCallback(async () => {
+    if (fontsLoaded) {
+      await SplashScreen.hideAsync();
+    }
+  }, [fontsLoaded]);
+
+  if (!fontsLoaded) {
+    return null;
+  }
 
   return (
     <TouchableWithoutFeedback onPress={keyboardHide}>
-      <View style={styles.container}>
-        <KeyboardAvoidingView
-          behavior={Platform.OS === "ios" ? "padding" : ""}
+      <View style={styles.container} onLayout={onLayoutRootView}>
+        <ImageBackground
+          style={styles.image}
+          source={require("../assets/images/bg-image.jpg")}
         >
-          <View
-            style={{ ...styles.form, marginBottom: isShowKeyboard ? 32 : 78 }}
+          <KeyboardAvoidingView
+            behavior={Platform.OS == "ios" ? "padding" : ""}
           >
-            <Text style={styles.formTitle}>Регистрация</Text>
-            <View>
-              <TextInput
-                style={styles.input}
-                placeholder="Login"
-                onFocus={() => setIsShowKeyboard(true)}
-                value={state.login}
-                onChangeText={(value) =>
-                  setState((prevState) => ({ ...prevState, login: value }))
-                }
-              />
+            <View style={styles.formContainer}>
+              <View
+                style={{
+                  ...styles.form,
+                  marginBottom: isShowKeyboard ? 32 : 78,
+                }}
+              >
+                <View style={styles.imgContainer}>
+                  <Icon style={styles.icon} />
+                </View>
+                <Text style={styles.formTitle}>Registration</Text>
+                <View style={{ marginBottom: 16 }}>
+                  <TextInput
+                    style={{
+                      ...styles.input,
+                      borderColor: focused == "login" ? "#FF6C00" : "#E8E8E8",
+                    }}
+                    placeholder="Login"
+                    onFocus={() => {
+                      setIsShowKeyboard(true);
+                      setFocused("login");
+                    }}
+                    onBlur={() => setFocused("")}
+                    value={state.login}
+                    onChangeText={(value) =>
+                      setState((prevState) => ({ ...prevState, login: value }))
+                    }
+                  />
+                </View>
+                <View style={{ marginBottom: 16 }}>
+                  <TextInput
+                    style={{
+                      ...styles.input,
+                      borderColor: focused == "email" ? "#FF6C00" : "#E8E8E8",
+                    }}
+                    placeholder="Email"
+                    onFocus={() => {
+                      setIsShowKeyboard(true);
+                      setFocused("email");
+                    }}
+                    onBlur={() => setFocused("")}
+                    value={state.email}
+                    onChangeText={(value) =>
+                      setState((prevState) => ({ ...prevState, email: value }))
+                    }
+                  />
+                </View>
+                <View>
+                  <TextInput
+                    onFocus={() => {
+                      setIsShowKeyboard(true);
+                      setFocused("password");
+                    }}
+                    style={{
+                      ...styles.input,
+                      borderColor:
+                        focused == "password" ? "#FF6C00" : "#E8E8E8",
+                    }}
+                    placeholder="Password"
+                    secureTextEntry={true}
+                    onBlur={() => setFocused("")}
+                    value={state.password}
+                    onChangeText={(value) =>
+                      setState((prevState) => ({
+                        ...prevState,
+                        password: value,
+                      }))
+                    }
+                  />
+                  <Text style={styles.showPassword}>Show</Text>
+                </View>
+
+                {!isShowKeyboard && (
+                  <TouchableOpacity
+                    activeOpacity={0.8}
+                    style={styles.btn}
+                    onPress={() => {
+                      keyboardHide;
+                      setState(initialState);
+                    }}
+                  >
+                    {!isShowKeyboard && (
+                      <Text style={styles.titleBtn}>Registration</Text>
+                    )}
+                  </TouchableOpacity>
+                )}
+
+                {!isShowKeyboard && (
+                  <TouchableOpacity activeOpacity={0.8}>
+                    <Text style={styles.link}>
+                      Already have an account? Log in
+                    </Text>
+                  </TouchableOpacity>
+                )}
+              </View>
             </View>
-            <View>
-              <TextInput
-                style={styles.input}
-                placeholder="Email"
-                onFocus={() => setIsShowKeyboard(true)}
-                value={state.email}
-                onChangeText={(value) =>
-                  setState((prevState) => ({ ...prevState, email: value }))
-                }
-              />
-            </View>
-            <View>
-              <TextInput
-                style={styles.input}
-                placeholder="Password"
-                secureTextEntry={true}
-                onFocus={() => setIsShowKeyboard(true)}
-                value={state.password}
-                onChangeText={(value) =>
-                  setState((prevState) => ({ ...prevState, password: value }))
-                }
-              />
-            </View>
-            <TouchableOpacity
-              activeOpacity={0.8}
-              style={styles.btn}
-              onPress={keyboardHide}
-            >
-              <Text style={styles.titleBtn}>Зарегистрироваться</Text>
-            </TouchableOpacity>
-            <Text
-              style={{
-                ...styles.link,
-                display: isShowKeyboard ? "none" : "flex",
-              }}
-            >
-              Уже есть аккаунт? Войти
-            </Text>
-          </View>
-        </KeyboardAvoidingView>
+          </KeyboardAvoidingView>
+        </ImageBackground>
       </View>
     </TouchableWithoutFeedback>
   );
@@ -97,27 +160,77 @@ export default function RegistrationScreen() {
 
 const styles = StyleSheet.create({
   container: {
+    flex: 1,
     backgroundColor: "#FFFFFF",
-    borderRadius: 25,
   },
+
+  image: {
+    flex: 1,
+    resizeMode: "cover",
+    justifyContent: "flex-end",
+  },
+  formContainer: {
+    borderTopLeftRadius: 25,
+    borderTopRightRadius: 25,
+    borderBottomLeftRadius: 0,
+    borderBottomRightRadius: 0,
+    backgroundColor: "#FFFFFF",
+  },
+
+  imgContainer: {
+    position: "absolute",
+    bottom: "88%",
+    right: "35%",
+    borderRadius: 16,
+    width: 120,
+    height: 120,
+    backgroundColor: "#F6F6F6",
+  },
+
+  icon: {
+    position: "absolute",
+    left: "89%",
+    bottom: "10%",
+  },
+
   formTitle: {
+    marginTop: 92,
     marginBottom: 33,
     color: "#212121",
+    textAlign: "center",
+    fontSize: 30,
+    fontFamily: "Roboto-Regular",
+    fontWeight: 500,
   },
+
   input: {
-    marginBottom: 16,
+    paddingLeft: 16,
     height: 50,
     borderWidth: 1,
     borderColor: "#E8E8E8",
-    color: "#F6F6F6",
+    backgroundColor: "#F6F6F6",
     borderRadius: 8,
-    textAlign: "center",
+    textAlign: "left",
+    fontFamily: "Roboto-Regular",
+    fontSize: 16,
+    fontWeight: 400,
+  },
+
+  showPassword: {
+    position: "absolute",
+    top: "30%",
+    left: "85%",
+    fontSize: 16,
+    color: "#1B4371",
   },
 
   form: {
+    borderTopLeftRadius: 25,
+    borderTopRightRadius: 25,
+    backgroundColor: "#FFFFFF",
     marginHorizontal: 16,
-    borderRadius: 25,
   },
+
   btn: {
     marginTop: 43,
     height: 50,
@@ -130,8 +243,14 @@ const styles = StyleSheet.create({
   },
   titleBtn: {
     color: "#FFFFFF",
+    fontWeight: 400,
+    fontSize: 16,
   },
   link: {
+    marginTop: 16,
+    textAlign: "center",
     color: "#1B4371",
+    fontWeight: 400,
+    fontSize: 16,
   },
 });
