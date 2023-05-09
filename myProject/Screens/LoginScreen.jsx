@@ -11,12 +11,6 @@ import {
   TouchableWithoutFeedback,
 } from "react-native";
 
-import { useFonts } from "expo-font";
-import * as SplashScreen from "expo-splash-screen";
-
-
-SplashScreen.preventAutoHideAsync();
-
 const initialState = {
   email: "",
   password: "",
@@ -30,25 +24,11 @@ export default function LoginScreen() {
   const keyboardHide = () => {
     setIsShowKeyboard(false);
     Keyboard.dismiss();
-   
   };
-
-  const [fontsLoaded] = useFonts({
-    "Roboto-Regular": require("../assets/fonts/Roboto-Regular.ttf"),
-  });
-  const onLayoutRootView = useCallback(async () => {
-    if (fontsLoaded) {
-      await SplashScreen.hideAsync();
-    }
-  }, [fontsLoaded]);
-
-  if (!fontsLoaded) {
-    return null;
-  }
 
   return (
     <TouchableWithoutFeedback onPress={keyboardHide}>
-      <View style={styles.container} onLayout={onLayoutRootView}>
+      <View style={styles.container}>
         <ImageBackground
           style={styles.image}
           source={require("../assets/images/bg-image.jpg")}
@@ -63,10 +43,9 @@ export default function LoginScreen() {
                   marginBottom: isShowKeyboard ? 32 : 111,
                 }}
               >
-                
                 <Text style={styles.formTitle}>Log in</Text>
-                
-                <View style={{marginBottom: 16,}}>
+
+                <View style={{ marginBottom: 16 }}>
                   <TextInput
                     style={{
                       ...styles.input,
@@ -113,8 +92,10 @@ export default function LoginScreen() {
                   <TouchableOpacity
                     activeOpacity={0.8}
                     style={styles.btn}
-                    onPress={() => {keyboardHide;
-                    setState(initialState);}}
+                    onPress={() => {
+                      keyboardHide;
+                      setState(initialState);
+                    }}
                   >
                     {!isShowKeyboard && (
                       <Text style={styles.titleBtn}>Log in</Text>
@@ -125,7 +106,7 @@ export default function LoginScreen() {
                 {!isShowKeyboard && (
                   <TouchableOpacity activeOpacity={0.8}>
                     <Text style={styles.link}>
-                    Need an account? Registration
+                      Need an account? Registration
                     </Text>
                   </TouchableOpacity>
                 )}
@@ -167,15 +148,13 @@ const styles = StyleSheet.create({
     backgroundColor: "#F6F6F6",
   },
 
-
   formTitle: {
     marginTop: 33,
     marginBottom: 31,
     color: "#212121",
     textAlign: "center",
     fontSize: 30,
-    fontFamily: "Roboto-Regular",
-    fontWeight: 500,
+    fontFamily: "Roboto-Medium",
   },
 
   input: {
@@ -188,7 +167,6 @@ const styles = StyleSheet.create({
     textAlign: "left",
     fontFamily: "Roboto-Regular",
     fontSize: 16,
-    fontWeight: 400,
   },
 
   showPassword: {
@@ -218,14 +196,14 @@ const styles = StyleSheet.create({
   },
   titleBtn: {
     color: "#FFFFFF",
-    fontWeight: 400,
+    fontFamily: "Roboto-Regular",
     fontSize: 16,
   },
   link: {
     marginTop: 16,
     textAlign: "center",
     color: "#1B4371",
-    fontWeight: 400,
+    fontFamily: "Roboto-Regular",
     fontSize: 16,
   },
 });

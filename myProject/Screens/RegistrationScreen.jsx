@@ -11,11 +11,7 @@ import {
   TouchableWithoutFeedback,
 } from "react-native";
 
-import { useFonts } from "expo-font";
-import * as SplashScreen from "expo-splash-screen";
 import Icon from "../assets/images/add.svg";
-
-SplashScreen.preventAutoHideAsync();
 
 const initialState = {
   login: "",
@@ -32,22 +28,10 @@ export default function RegistrationScreen() {
     setIsShowKeyboard(false);
     Keyboard.dismiss();
   };
-  const [fontsLoaded] = useFonts({
-    "Roboto-Regular": require("../assets/fonts/Roboto-Regular.ttf"),
-  });
-  const onLayoutRootView = useCallback(async () => {
-    if (fontsLoaded) {
-      await SplashScreen.hideAsync();
-    }
-  }, [fontsLoaded]);
-
-  if (!fontsLoaded) {
-    return null;
-  }
 
   return (
     <TouchableWithoutFeedback onPress={keyboardHide}>
-      <View style={styles.container} onLayout={onLayoutRootView}>
+      <View style={styles.container}>
         <ImageBackground
           style={styles.image}
           source={require("../assets/images/bg-image.jpg")}
@@ -199,8 +183,7 @@ const styles = StyleSheet.create({
     color: "#212121",
     textAlign: "center",
     fontSize: 30,
-    fontFamily: "Roboto-Regular",
-    fontWeight: 500,
+    fontFamily: "Roboto-Medium",
   },
 
   input: {
@@ -213,7 +196,6 @@ const styles = StyleSheet.create({
     textAlign: "left",
     fontFamily: "Roboto-Regular",
     fontSize: 16,
-    fontWeight: 400,
   },
 
   showPassword: {
@@ -243,14 +225,14 @@ const styles = StyleSheet.create({
   },
   titleBtn: {
     color: "#FFFFFF",
-    fontWeight: 400,
+    fontFamily: "Roboto-Regular",
     fontSize: 16,
   },
   link: {
     marginTop: 16,
     textAlign: "center",
     color: "#1B4371",
-    fontWeight: 400,
+    fontFamily: "Roboto-Regular",
     fontSize: 16,
   },
 });
